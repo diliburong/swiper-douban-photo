@@ -2,7 +2,11 @@ package parse
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/PuerkitoBio/goquery"
@@ -69,4 +73,41 @@ func ParseMovies(doc *goquery.Document) (photoes []Photo) {
 	})
 
 	return photoes
+}
+
+func SaveImage(Url string) {
+	res, err := http.Get(Url)
+	if err != nil {
+		// fmt.Printf("%d HTTP ERROR:%s", paper.Pid, err)
+		return
+	}
+
+	defer res.Body.Close()
+	//按分辨率目录保存图片
+	Dirname := "./tmp/"
+	if !IsDirExist(Dirname) {
+		os.Mkdir(Dirname, 0755)
+		fmt.Printf("dir %s created\n", Dirname)
+	}
+
+	//根据URL文件名创建文件
+	filename := filepath.Base(Url)
+	dst, err := os.Create(Dirname + filename)
+	if err != nil {
+		// fmt.Println("%d HTTP ERROR:%s", paper.Pid, err)
+		return
+	}
+	defer dst.Close()
+
+	// 写入文件
+	io.Copy(dst, res.Body)
+}
+
+func IsDirExist(path string) bool {
+	p, err := os.Stat(path)
+	if err != nil {
+		return os.IsExist(err)
+	} else {
+		return p.IsDir()
+	}
 }

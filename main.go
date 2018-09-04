@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crawler-douban/parse"
 	"fmt"
+	"swiper-douban-photo/parse"
 )
 
 var (
@@ -19,5 +19,4 @@ func Start() {
 
 func main() {
 	Start()
-
 }
